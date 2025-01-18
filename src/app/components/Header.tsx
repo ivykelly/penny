@@ -3,8 +3,9 @@ import InvestButton from "./InvestButton";
 
 export default function Header() {
     return (
-        <div className="flex flex-row items-center justify-between bg-background px-8 pt-6">
+        <div className="mx-4 mt-4 flex flex-row items-center justify-between bg-background">
             <Coin />
+            <p className="text-2xl font-black">Penny</p>
             <InvestButton />
         </div>
     );

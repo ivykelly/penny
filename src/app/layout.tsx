@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className={`${manrope.className} antialiased`}>
+            <body className={`${manrope.className} antialiased sm:hidden`}>
                 <CoinProvider>
                     <ProgressProvider>
                         <Header />
@@ -30,6 +30,7 @@ export default function RootLayout({
                     </ProgressProvider>
                 </CoinProvider>
             </body>
+            <p className="text-3xl max-sm:hidden">This is a mobile app, unavailable on desktop.</p>
         </html>
     );
 }
