@@ -5,15 +5,15 @@ import { useRouter } from "next/navigation";
 import { lessons } from "./data/lessons";
 
 const learningPaths = [
-  { id: 1, title: 'Basics', icon: 'basics.png', progress: 100 },
-  { id: 2, title: 'Bonds', icon: 'bonds.png', progress: 59 },
-  { id: 3, title: 'Stocks', icon: 'stocks.png', progress: 0 },
-  { id: 4, title: 'Mutual Funds', icon: 'crypto.png', progress: 0 },
-  { id: 5, title: 'Dividends', icon: 'real-estate.png', progress: 0 },
-  { id: 6, title: 'Strategy', icon: 'budgeting.png', progress: 0 },
-  { id: 7, title: 'Savings', icon: 'taxes.png', progress: 0 },
-  { id: 8, title: 'Risk', icon: 'debt.png', progress: 0 },
-  { id: 9, title: 'Portfolio', icon: 'insurance.png', progress: 0 },
+  { id: 1, title: 'Basics', icon: '/icons/basics.png', progress: 100 },
+  { id: 2, title: 'Bonds', icon: '/icons/bonds.png', progress: 59 },
+  { id: 3, title: 'Stocks', icon: '/icons/stocks.png', progress: 0 },
+  { id: 4, title: 'Mutual Funds', icon: '/icons/funds.png', progress: 0 },
+  { id: 5, title: 'Dividends', icon: '/icons/dividends.png', progress: 0 },
+  { id: 6, title: 'Strategy', icon: '/icons/strategy.png', progress: 0 },
+  { id: 7, title: 'Savings', icon: '/icons/savings.png', progress: 0 },
+  { id: 8, title: 'Risk', icon: '/icons/risk.png', progress: 0 },
+  { id: 9, title: 'Portfolio', icon: '/icons/portfolio.png', progress: 0 },
 ];
 
 export default function Home() {
