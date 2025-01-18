@@ -1,11 +1,14 @@
 import Coin from "@/app/components/Coin";
 import InvestButton from "./InvestButton";
+import Link from "next/link";
 
 export default function Header() {
     return (
         <div className="mx-4 mt-4 flex flex-row items-center justify-between bg-background">
             <Coin />
-            <p className="text-2xl font-black">Penny</p>
+            <Link href="/" className="text-2xl font-black">
+                Penny
+            </Link>
             <InvestButton />
         </div>
     );

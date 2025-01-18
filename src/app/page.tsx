@@ -56,7 +56,7 @@ export default function Home() {
                             <Image src={learningPaths[0].icon} alt={learningPaths[0].title} width={48} height={48} className="h-12 w-12" />
                         </button>
                         <div className="h-2 overflow-hidden rounded-full bg-gray-200">
-                            <div className={`h-full transition-all duration-300 ${isCategoryCompleted(learningPaths[0].id) ? "bg-green-500" : "bg-green-500"}`} style={{ width: `${getCategoryProgress(learningPaths[0].id)}%` }} />
+                            <div className={`h-full transition-all duration-300 ${isCategoryCompleted(learningPaths[0].id) ? "bg-green-500" : "bg-red-500"}`} style={{ width: `${getCategoryProgress(learningPaths[0].id)}%` }} />
                         </div>
                     </div>
                 </div>
@@ -73,7 +73,7 @@ export default function Home() {
                                 <Image src={path.icon} alt={path.title} width={48} height={48} className="h-12 w-12" />
                             </button>
                             <div className="h-2 overflow-hidden rounded-full bg-gray-200">
-                                <div className={`h-full transition-all duration-300 ${isCategoryCompleted(path.id) ? "bg-green-500" : "bg-green-500"}`} style={{ width: `${getCategoryProgress(path.id)}%` }} />
+                                <div className={`h-full transition-all duration-300 ${isCategoryCompleted(path.id) ? "bg-green-500" : "bg-red-500"}`} style={{ width: `${getCategoryProgress(path.id)}%` }} />
                             </div>
                         </div>
                     ))}

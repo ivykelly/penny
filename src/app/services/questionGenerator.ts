@@ -1,5 +1,6 @@
 import { QuestionData, LessonData } from "../types/lesson";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { categories } from "../data/categories";
 
 const API_KEY = process.env.GEMINI_API_KEY;
 
@@ -84,55 +85,16 @@ async function generateQuestionsWithGemini(topic: string, lessonTitle: string): 
 }
 
 export async function generateLesson(categoryId: string, lessonIndex: number): Promise<LessonData> {
-    const topics = {
-        "1": {
-            name: "Basic Concepts",
-            lessons: ["Investment Fundamentals", "Risk and Return", "Market Analysis"],
-        },
-        "2": {
-            name: "Bonds",
-            lessons: ["Bond Fundamentals", "Types of Bonds", "Bond Trading Strategies"],
-        },
-        "3": {
-            name: "Stocks",
-            lessons: ["Stock Market Basics", "Stock Valuation", "Trading Fundamentals"],
-        },
-        "4": {
-            name: "Mutual Funds",
-            lessons: ["Fund Types and Structure", "Fund Selection", "Portfolio Management"],
-        },
-        "5": {
-            name: "Dividends",
-            lessons: ["Dividend Basics", "Dividend Strategies", "Income Investing"],
-        },
-        "6": {
-            name: "Strategy",
-            lessons: ["Investment Approaches", "Market Timing", "Portfolio Rebalancing"],
-        },
-        "7": {
-            name: "Savings",
-            lessons: ["Emergency Funds", "Saving Strategies", "Goal-Based Saving"],
-        },
-        "8": {
-            name: "Risk",
-            lessons: ["Risk Types", "Risk Management", "Risk-Adjusted Returns"],
-        },
-        "9": {
-            name: "Portfolio",
-            lessons: ["Asset Allocation", "Diversification Strategies", "Portfolio Optimization"],
-        },
-    };
-
-    const category = topics[categoryId as keyof typeof topics];
+    const category = categories[categoryId];
     if (!category) throw new Error("Invalid category");
 
-    const lessonTitle = category.lessons[lessonIndex];
+    const lessonTitle = category.lessons[lessonIndex]?.title;
     if (!lessonTitle) throw new Error("Invalid lesson index");
 
-    const questions = await generateQuestionsWithGemini(category.name, lessonTitle);
+    const questions = await generateQuestionsWithGemini(category.title, lessonTitle);
 
     return {
-        id: `${categoryId}-${lessonIndex}`,
+        id: `${category.id}-${lessonIndex + 1}`,
         title: lessonTitle,
         questions,
     };
