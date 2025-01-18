@@ -4,30 +4,43 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Lesson from "../components/lessons/Lesson";
 import { useProgress } from "../contexts/ProgressContext";
-import { categories } from "../data/categories";
+import { LessonData } from "../types/lesson";
+import { generateLesson } from "../services/questionGenerator";
 
 export default function LessonPage() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const [mounted, setMounted] = useState(false);
+    const [currentLesson, setCurrentLesson] = useState<LessonData | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const categoryId = searchParams.get("category");
     const lessonIndex = parseInt(searchParams.get("lesson") || "0");
     const { completeLesson } = useProgress();
 
-    // Handle initial mounting
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    // Handle invalid category/lesson
     useEffect(() => {
-        if (!mounted) return;
+        async function loadLesson() {
+            if (!categoryId) return;
 
-        const isValidCategory = categoryId && categories[categoryId];
-        const currentLesson = isValidCategory ? categories[categoryId].lessons[lessonIndex] : null;
+            try {
+                setLoading(true);
+                setError(null);
+                const lesson = await generateLesson(categoryId, lessonIndex);
+                setCurrentLesson(lesson);
+            } catch (error) {
+                console.error("Failed to generate lesson:", error);
+                setError((error as Error).message || "Failed to generate lesson");
+            } finally {
+                setLoading(false);
+            }
+        }
 
-        if (!isValidCategory || !currentLesson) {
-            router.push("/");
+        if (mounted) {
+            loadLesson();
         }
     }, [mounted, categoryId, lessonIndex, router]);
 
@@ -35,7 +48,8 @@ export default function LessonPage() {
         if (categoryId) {
             completeLesson(categoryId, lessonIndex);
             const nextLesson = lessonIndex + 1;
-            if (nextLesson < categories[categoryId].lessons.length) {
+            if (nextLesson < 3) {
+                // Now hardcoded to 3 lessons per category
                 router.push(`/lessons?category=${categoryId}&lesson=${nextLesson}`);
             } else {
                 router.push("/");
@@ -43,14 +57,33 @@ export default function LessonPage() {
         }
     };
 
-    // Show loading or error state
-    if (!mounted || !categoryId || !categories[categoryId]) {
-        return <p>Loading...</p>;
+    if (!mounted || loading) {
+        return (
+            <div className="flex min-h-screen items-center justify-center">
+                <div className="text-center">
+                    <div className="mb-4 text-2xl">🤔</div>
+                    <p className="text-lg font-medium text-gray-600">Generating your lesson...</p>
+                </div>
+            </div>
+        );
     }
 
-    const currentLesson = categories[categoryId].lessons[lessonIndex];
+    if (error) {
+        return (
+            <div className="flex min-h-screen items-center justify-center">
+                <div className="text-center">
+                    <div className="mb-4 text-2xl">😕</div>
+                    <p className="mb-4 text-lg font-medium text-red-600">{error}</p>
+                    <button onClick={() => router.push("/")} className="rounded-lg bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600">
+                        Return Home
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     if (!currentLesson) {
-        return <p>Lesson not found</p>;
+        return <p>Failed to load lesson</p>;
     }
 
     return <Lesson lesson={currentLesson} onComplete={handleLessonComplete} />;
