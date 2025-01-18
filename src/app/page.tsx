@@ -5,15 +5,15 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 const learningPaths = [
-  { id: 1, title: 'Basics', icon: '💰', progress: 100 },
-  { id: 2, title: 'Stock Market', icon: '📈', progress: 50 },
-  { id: 3, title: 'Retirement', icon: '🏖️', progress: 0 },
-  { id: 4, title: 'Crypto', icon: '🪙', progress: 0 },
-  { id: 5, title: 'Real Estate', icon: '🏠', progress: 0 },
-  { id: 6, title: 'Budgeting', icon: '📊', progress: 0 },
-  { id: 7, title: 'Taxes', icon: '📝', progress: 0 },
-  { id: 8, title: 'DebtManagement', icon: '💳', progress: 0 },
-  { id: 9, title: 'Insurance', icon: '🛡️', progress: 0 },
+  { id: 1, title: 'Basics', icon: '/icons/basics.png', progress: 100 },
+  { id: 2, title: 'Stock Market', icon: '/icons/stocks.png', progress: 50 },
+  { id: 3, title: 'Retirement', icon: '/icons/retirement.png', progress: 0 },
+  { id: 4, title: 'Crypto', icon: '/icons/crypto.png', progress: 0 },
+  { id: 5, title: 'Real Estate', icon: '/icons/real-estate.png', progress: 0 },
+  { id: 6, title: 'Budgeting', icon: '/icons/budgeting.png', progress: 0 },
+  { id: 7, title: 'Taxes', icon: '/icons/taxes.png', progress: 0 },
+  { id: 8, title: 'DebtManagement', icon: '/icons/debt.png', progress: 0 },
+  { id: 9, title: 'Insurance', icon: '/icons/insurance.png', progress: 0 },
 ];
 
 export default function Home() {
@@ -27,7 +27,7 @@ export default function Home() {
         {/* First Row - Single Item */}
         <div className="w-full max-w-2xl flex justify-center">
           <div className="flex flex-col space-y-2 w-[calc(50%-32px)]">
-            <span className="text-sm font-medium text-gray-700 text-center">
+            <span className="text-sm font-bold text-pink-900 text-center">
               {learningPaths[0].title}
             </span>
             <button
@@ -36,7 +36,13 @@ export default function Home() {
                        transition-all duration-300 flex flex-col items-center 
                        justify-center p-4 hover:scale-105 w-full"
             >
-              <span className="text-3xl">{learningPaths[0].icon}</span>
+              <Image 
+                src={learningPaths[0].icon}
+                alt={learningPaths[0].title}
+                width={48}
+                height={48}
+                className="w-12 h-12"
+              />
             </button>
             <div className="bg-gray-200 rounded-full h-2 overflow-hidden">
               <div
@@ -51,7 +57,7 @@ export default function Home() {
         <div className="grid grid-cols-2 gap-x-16 gap-y-10 w-full max-w-2xl">
           {learningPaths.slice(1).map((path) => (
             <div key={path.id} className="flex flex-col space-y-2">
-              <span className="text-sm font-medium text-gray-700 text-center">
+              <span className="text-sm font-bold text-pink-900 text-center">
                 {path.title}
               </span>
               <button
@@ -60,7 +66,13 @@ export default function Home() {
                          transition-all duration-300 flex flex-col items-center 
                          justify-center p-4 hover:scale-105 w-full"
               >
-                <span className="text-3xl">{path.icon}</span>
+                <Image 
+                  src={path.icon}
+                  alt={path.title}
+                  width={48}
+                  height={48}
+                  className="w-12 h-12"
+                />
               </button>
               <div className="bg-gray-200 rounded-full h-2 overflow-hidden">
                 <div
