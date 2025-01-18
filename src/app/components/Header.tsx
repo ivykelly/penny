@@ -4,7 +4,7 @@ import InvestButton from "./InvestButton";
 
 export default function Header() {
     return (
-        <div className="flex flex-row justify-between px-10 pt-6">
+        <div className="flex flex-row items-center justify-between px-8 pt-6">
             <Coin />
             <InvestButton />
         </div>
