@@ -10,9 +10,10 @@ import FillBlankQuestion from "../questions/FillBlankQuestion";
 
 interface LessonProps {
     lesson: LessonData;
+    onComplete: () => void;
 }
 
-export default function Lesson({ lesson }: LessonProps) {
+export default function Lesson({ lesson, onComplete }: LessonProps) {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedAnswer, setSelectedAnswer] = useState<number | string | string[] | null>(null);
     const [showResponse, setShowResponse] = useState(false);
@@ -62,7 +63,7 @@ export default function Lesson({ lesson }: LessonProps) {
         if (currentQuestionIndex < lesson.questions.length - 1) {
             setCurrentQuestionIndex((prev) => prev + 1);
         } else {
-            console.log("Lesson completed!");
+            onComplete();
         }
     };
 

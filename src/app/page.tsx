@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { lessons } from "./data/lessons";
 
 const learningPaths = [
   { id: 1, title: 'Basics', icon: 'basics.png', progress: 100 },
