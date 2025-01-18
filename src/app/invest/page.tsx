@@ -102,11 +102,11 @@ export default function Invest() {
   return (
     <div className="p-4 max-w-7xl mx-auto">
       {/* Charts Row */}
-      <div className="flex gap-4 mb-8">
-        <div className="flex-1 p-4 border rounded-lg">
+      <div className="flex flex-col gap-4 mb-8">
+        <div className="p-4 border rounded-lg">
           <Line data={lineChartData} />
         </div>
-        <div className="flex-1 p-4 border rounded-lg">
+        <div className="p-4 border rounded-lg">
           <Pie data={pieChartData} />
         </div>
       </div>
@@ -179,3 +179,4 @@ export default function Invest() {
     </div>
   );
 }
+
