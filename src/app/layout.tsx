@@ -3,6 +3,7 @@ import { Manrope } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Header";
 import { CoinProvider } from "./contexts/CoinContext";
+import { ProgressProvider } from "./contexts/ProgressContext";
 
 const manrope = Manrope({
     subsets: ["latin"],
@@ -23,8 +24,10 @@ export default function RootLayout({
         <html lang="en">
             <body className={`${manrope.className} antialiased`}>
                 <CoinProvider>
-                    <Header />
-                    {children}
+                    <ProgressProvider>
+                        <Header />
+                        {children}
+                    </ProgressProvider>
                 </CoinProvider>
             </body>
         </html>

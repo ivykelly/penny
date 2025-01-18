@@ -2,36 +2,56 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { lessons } from "../data/lessons";
 import Lesson from "../components/lessons/Lesson";
+import { useProgress } from "../contexts/ProgressContext";
+import { categories } from "../data/categories";
 
 export default function LessonPage() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const [mounted, setMounted] = useState(false);
-    const category = searchParams.get("category");
+    const categoryId = searchParams.get("category");
+    const lessonIndex = parseInt(searchParams.get("lesson") || "0");
+    const { completeLesson } = useProgress();
 
+    // Handle initial mounting
     useEffect(() => {
         setMounted(true);
     }, []);
 
+    // Handle invalid category/lesson
     useEffect(() => {
-        if (mounted && (!category || !lessons[category])) {
+        if (!mounted) return;
+
+        const isValidCategory = categoryId && categories[categoryId];
+        const currentLesson = isValidCategory ? categories[categoryId].lessons[lessonIndex] : null;
+
+        if (!isValidCategory || !currentLesson) {
             router.push("/");
         }
-    }, [category, router, mounted]);
+    }, [mounted, categoryId, lessonIndex, router]);
 
     const handleLessonComplete = () => {
-        router.push("/");
+        if (categoryId) {
+            completeLesson(categoryId, lessonIndex);
+            const nextLesson = lessonIndex + 1;
+            if (nextLesson < categories[categoryId].lessons.length) {
+                router.push(`/lessons?category=${categoryId}&lesson=${nextLesson}`);
+            } else {
+                router.push("/");
+            }
+        }
     };
 
-    if (!mounted || !category || !lessons[category]) {
-        return <div className="min-h-screen bg-gray-50">error!!!!</div>;
+    // Show loading or error state
+    if (!mounted || !categoryId || !categories[categoryId]) {
+        return <p>Loading...</p>;
     }
 
-    return (
-        <div className="min-h-screen bg-gray-50">
-            <Lesson lesson={lessons[category]} onComplete={handleLessonComplete} />
-        </div>
-    );
+    const currentLesson = categories[categoryId].lessons[lessonIndex];
+    if (!currentLesson) {
+        return <p>Lesson not found</p>;
+    }
+
+    return <Lesson lesson={currentLesson} onComplete={handleLessonComplete} />;
 }

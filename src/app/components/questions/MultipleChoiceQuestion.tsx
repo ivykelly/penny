@@ -1,25 +1,19 @@
 interface MultipleChoiceQuestionProps {
     question: string;
     options: string[];
-    onSelect: (value: number) => void;
     selectedAnswer: number | null;
-    disabled: boolean;
-    correctAnswer?: number;
-    showCorrectAnswer?: boolean;
+    onSelect: (value: number) => void;
+    isSubmitted: boolean;
 }
 
 export default function MultipleChoiceQuestion(props: MultipleChoiceQuestionProps) {
     const getButtonStyle = (index: number) => {
-        if (!props.disabled || !props.showCorrectAnswer) {
+        if (!props.isSubmitted) {
             return props.selectedAnswer === index ? "border-[#58CC02] bg-[#e5f6d3]" : "border-gray-200 text-gray-700 hover:border-[#58CC02] hover:bg-[#e5f6d3]";
         }
 
-        if (index === props.correctAnswer) {
+        if (props.selectedAnswer === index) {
             return "border-[#58CC02] bg-[#e5f6d3]";
-        }
-
-        if (index === props.selectedAnswer) {
-            return "border-[#FF4B4B] bg-[#FFE8E8]";
         }
 
         return "border-gray-200 text-gray-700 opacity-50";
@@ -34,7 +28,7 @@ export default function MultipleChoiceQuestion(props: MultipleChoiceQuestionProp
 
             <div className="flex w-full max-w-md flex-col gap-3">
                 {props.options.map((option, index) => (
-                    <button key={index} onClick={() => props.onSelect(index)} disabled={props.disabled} className={`w-full rounded-lg border-2 px-4 py-2.5 text-left text-base font-semibold transition-colors duration-200 ${props.disabled ? "cursor-not-allowed" : ""} ${getButtonStyle(index)}`}>
+                    <button key={index} onClick={() => props.onSelect(index)} disabled={props.isSubmitted} className={`w-full rounded-lg border-2 px-4 py-2.5 text-left text-base font-semibold transition-colors duration-200 ${props.isSubmitted ? "cursor-not-allowed" : ""} ${getButtonStyle(index)}`}>
                         {option}
                     </button>
                 ))}

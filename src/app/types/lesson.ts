@@ -33,3 +33,18 @@ export interface LessonData {
     title: string;
     questions: QuestionData[];
 }
+
+export interface CategoryData {
+    id: string;
+    title: string;
+    lessons: LessonData[];
+    currentLessonIndex: number; // Track which lesson user is on
+    progress: number; // 0-100
+}
+
+export interface UserProgress {
+    [categoryId: string]: {
+        completedLessons: number[];
+        currentLessonIndex: number;
+    };
+}
