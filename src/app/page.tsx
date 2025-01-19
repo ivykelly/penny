@@ -21,14 +21,14 @@ export default function Home() {
     };
 
     return (
-        <div className="min-h-screen bg-background p-8">
+        <div className="mx-8 my-16 min-h-screen bg-background">
             <div className="mx-auto flex max-w-3xl flex-col items-center gap-y-10">
                 {/* First Row - Single Item */}
                 <div className="flex w-full max-w-2xl justify-center">
-                    <div className="flex w-[calc(50%-32px)] flex-col space-y-2">
+                    <div className="flex w-[calc(40%-32px)] flex-col space-y-2">
                         <span className="text-center text-sm font-bold text-pink-900">{learningPaths[0].title}</span>
-                        <Link href={categories[learningPaths[0].id] ? `/lessons?category=${learningPaths[0].id}&lesson=0` : "#"} className={`flex aspect-square w-full flex-col items-center justify-center rounded-full p-4 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl ${getCategoryStyle(learningPaths[0].id)}`}>
-                            <Image src={learningPaths[0].icon} alt={learningPaths[0].title} width={48} height={48} className="h-12 w-12" />
+                        <Link href={categories[learningPaths[0].id] ? `/lessons?category=${learningPaths[0].id}&lesson=0` : "#"} className={`flex aspect-square w-full flex-col items-center justify-center rounded-full shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl ${getCategoryStyle(learningPaths[0].id)}`}>
+                            <Image src={learningPaths[0].icon} alt={learningPaths[0].title} width={64} height={64} className="h-16 w-16" />
                         </Link>
                     </div>
                 </div>
@@ -36,10 +36,10 @@ export default function Home() {
                 {/* Remaining Rows - Two Items per Row */}
                 <div className="grid w-full max-w-2xl grid-cols-2 gap-x-16 gap-y-10">
                     {learningPaths.slice(1).map((path) => (
-                        <div key={path.id} className="flex flex-col space-y-2">
+                        <div key={path.id} className="flex flex-col items-center space-y-2">
                             <span className="text-center text-sm font-bold text-pink-900">{path.title}</span>
-                            <Link href={categories[path.id] ? `/lessons?category=${path.id}&lesson=0` : "#"} className={`flex aspect-square w-full flex-col items-center justify-center rounded-full p-4 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl ${getCategoryStyle(path.id)}`}>
-                                <Image src={path.icon} alt={path.title} width={48} height={48} className="h-12 w-12" />
+                            <Link href={categories[path.id] ? `/lessons?category=${path.id}&lesson=0` : "#"} className={`flex aspect-square w-4/5 flex-col items-center justify-center rounded-full shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl ${getCategoryStyle(path.id)}`}>
+                                <Image src={path.icon} alt={path.title} width={64} height={64} className="h-16 w-16" />
                             </Link>
                         </div>
                     ))}
