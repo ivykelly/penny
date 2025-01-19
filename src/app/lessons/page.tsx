@@ -61,10 +61,15 @@ export default function LessonPage() {
 
     if (!mounted || loading) {
         return (
-            <div className="flex min-h-screen items-center justify-center">
+            <div className="fixed inset-0 flex items-center justify-center bg-background">
                 <div className="text-center">
-                    <div className="mb-4 text-2xl">🤔</div>
-                    <p className="text-lg font-medium text-gray-600">Generating your lesson...</p>
+                    <div className="mb-4 text-4xl">🤔</div>
+                    <div className="flex flex-col items-center gap-3">
+                        <p className="text-xl font-medium text-gray-600">Generating your lesson...</p>
+                        <div className="h-1.5 w-48 overflow-hidden rounded-full bg-gray-200">
+                            <div className="h-full animate-[loading_1s_ease-in-out_infinite] bg-[#58CC02]" />
+                        </div>
+                    </div>
                 </div>
             </div>
         );
