@@ -7,7 +7,7 @@ import { useCoin } from "../contexts/CoinContext";
 export default function Coin() {
     const { coins } = useCoin(); // Get the user's coins
 
-    const coinsTruncated = Math.floor(coins);
+    const coinsTruncated = Math.round((coins + Number.EPSILON) * 100) / 100;
 
     return (
         <div className="flex flex-col items-center">
