@@ -14,7 +14,8 @@ async function generateQuestionsWithGemini(topic: string, lessonTitle: string): 
 
     const prompt = `
             Generate 7 educational questions about ${topic} focusing on ${lessonTitle}.
-            Make questions educational and progressively more challenging. It should start off very easy!
+            Make questions educational and progressively more challenging. It should start off very very easy like a kid should be able to answer the first category and then get progressively harder where the last category is very complex!
+            Order of difficulty (easiest to harder):, Basics, Bonds, Stocks, Mutual Funds, Dividends, Savings, Risk, Portfolio
             Create a mix of question types:
 
             2 True/False questions:

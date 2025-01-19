@@ -52,9 +52,9 @@ export default function Lesson({ lesson, onComplete, categoryTitle }: LessonProp
         }
     };
 
-    const getCorrectAnswerText = (question: QuestionData, userAnswer: AnswerType): string | undefined => {
+    const getCorrectAnswerText = (question: QuestionData, userAnswer: AnswerType): { answers: string[]; count: number } | undefined => {
         if (question.type === "multiple-choice" && !checkAnswer(question, userAnswer)) {
-            return question.options[question.correctAnswer];
+            return { answers: [question.options[question.correctAnswer]], count: 1 };
         } else if (question.type === "fill-blank") {
             const userAnswers = userAnswer as string[];
             const blankSegments = question.segments.filter((seg) => seg.type === "blank");
@@ -67,10 +67,10 @@ export default function Lesson({ lesson, onComplete, categoryTitle }: LessonProp
                     }
                     return null;
                 })
-                .filter(Boolean);
+                .filter(Boolean) as string[];
 
             if (incorrectAnswers.length > 0) {
-                return `Correct answer${incorrectAnswers.length > 1 ? "s" : ""}: ${incorrectAnswers.join(", ")}`;
+                return { answers: incorrectAnswers, count: incorrectAnswers.length };
             }
         }
         return undefined;

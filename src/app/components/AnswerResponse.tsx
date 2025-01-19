@@ -2,7 +2,7 @@ interface AnswerResponseProps {
     isCorrect: boolean;
     show: boolean;
     onContinue: () => void;
-    correctAnswer?: string;
+    correctAnswer?: { answers: string[]; count: number };
     currentCoins: number;
 }
 
@@ -34,7 +34,7 @@ export default function AnswerResponse({ isCorrect, show, onContinue, correctAns
                             <span className="text-2xl">{isCorrect ? "🎉" : "😕"}</span>
                             <span className="text-lg font-bold text-white">{getMessage()}</span>
                         </div>
-                        {!isCorrect && correctAnswer && <span className="text-sm text-white opacity-90">Correct answer: {correctAnswer}</span>}
+                        {!isCorrect && correctAnswer && <span className="text-sm text-white opacity-90">{`Correct answer${correctAnswer.count > 1 ? "s" : ""}: ${correctAnswer.answers.join(", ")}`}</span>}
                     </div>
                     <button onClick={onContinue} className="rounded-xl bg-white px-6 py-2 font-bold text-[#58CC02] hover:bg-[#f7f7f7] active:bg-[#efefef]">
                         Continue

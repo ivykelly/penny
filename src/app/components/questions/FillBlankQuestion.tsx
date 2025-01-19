@@ -19,12 +19,19 @@ export default function FillBlankQuestion(props: FillBlankQuestionProps) {
             return "border-gray-200 focus:border-[#58CC02] focus:ring-[#58CC02]";
         }
 
-        const blankSegments = props.segments.filter((seg) => seg.type === "blank");
-        const correctAnswer = blankSegments[index]?.answer || "";
-        const userAnswer = props.selectedAnswer[index] || "";
+        try {
+            const blankSegments = props.segments.filter((seg) => seg.type === "blank");
+            const correctAnswer = blankSegments[index]?.answer || "";
+            const userAnswer = props.selectedAnswer[index];
 
-        if (userAnswer.toLowerCase().trim() === correctAnswer.toLowerCase().trim()) {
-            return "border-[#58CC02] bg-[#e5f6d3] focus:border-[#58CC02] focus:ring-[#58CC02]";
+            // Only perform validation if we have a user answer
+            if (userAnswer && correctAnswer) {
+                if (userAnswer.toLowerCase().trim() === correctAnswer.toLowerCase().trim()) {
+                    return "border-[#58CC02] bg-[#e5f6d3] focus:border-[#58CC02] focus:ring-[#58CC02]";
+                }
+            }
+        } catch (error) {
+            console.error("Error in getInputStyle:", error);
         }
 
         return "border-[#FF4B4B] bg-[#FFE8E8] focus:border-[#FF4B4B] focus:ring-[#FF4B4B]";
