@@ -137,7 +137,7 @@ export default function Lesson({ lesson, onComplete, categoryTitle }: LessonProp
 
     return (
         <>
-            <div className="mx-8 mb-16 mt-10 flex max-w-2xl flex-col items-center justify-center">
+            <div className="mx-8 my-16 flex max-w-2xl flex-col items-center justify-center">
                 <div className="w-full space-y-8 rounded-2xl bg-white p-8 shadow-lg">
                     {getQuestionComponent()}
 
