@@ -14,6 +14,9 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
+import { stocksData } from '../data/stocks';
+import { etfsData } from '../data/etfs';
+import { gicsData } from '../data/gics';
 
 // Register ChartJS components
 ChartJS.register(
@@ -27,19 +30,32 @@ ChartJS.register(
   Legend
 );
 
+// const API_KEY = process.env.POLYGON_API_KEY;
+// const POPULAR_TICKERS = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'META', 'TSLA', 'NVDA', 'JPM', 'BAC', 'WMT'];
+
 export default function Invest() {
   const [selectedType, setSelectedType] = useState<'ETF' | 'GIC' | 'STOCK' | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [portfolio, setPortfolio] = useState({
-    ETF: 0,
-    GIC: 0,
-    STOCK: 0,
+  const [portfolio, setPortfolio] = useState<{
+    ETF: { [key: string]: number };
+    GIC: { [key: string]: number };
+    STOCK: { [key: string]: number };
+  }>({
+    ETF: {},
+    GIC: {},
+    STOCK: {},
   });
   const { coins, setCoins } = useCoin();
   const [earnings, setEarnings] = useState<number[]>([10000]); // Historical earnings data
   const [searchResults, setSearchResults] = useState<any[]>([]); // Will store API results
-  const [investmentAmount, setInvestmentAmount] = useState<number>(0);
+  const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
 
+
+  // Calculate total value for pie chart
+  const getTotalValue = (type: 'ETF' | 'GIC' | 'STOCK') => {
+    return Object.values(portfolio[type]).reduce((sum, amount) => sum + amount, 0);
+  };
+  
   // Mock data for charts
   const lineChartData = {
     labels: earnings.map((_, index) => `Day ${index + 1}`),
@@ -54,7 +70,11 @@ export default function Invest() {
   const pieChartData = {
     labels: ['ETFs', 'GICs', 'Stocks'],
     datasets: [{
-      data: [portfolio.ETF, portfolio.GIC, portfolio.STOCK],
+      data: [
+        getTotalValue('ETF'),
+        getTotalValue('GIC'),
+        getTotalValue('STOCK')
+      ],
       backgroundColor: [
         'rgb(255, 99, 132)',
         'rgb(54, 162, 235)',
@@ -63,41 +83,121 @@ export default function Invest() {
     }]
   };
 
-  // Mock function to fetch investment options
+//   const fetchStockPrice = async (ticker: string) => {
+//     const today = new Date();
+//     today.setDate(today.getDate() - 1); // Subtract one day
+//     const yesterday = today.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+
+
+//     try {
+//       const response = await fetch(
+//         `https://api.polygon.io/v2/aggs/ticker/AAPL/range/1/day/${yesterday}/${yesterday}?apiKey=qF3R8v1z1bT1_gQh8AWT9tA7C6Emd9Mz`
+//       );
+//       const data = await response.json();
+//       return data.results?.[0]?.c || null;
+//     } catch (error) {
+//       console.error(`Error fetching ${ticker}:`, error);
+//       return null;
+//     }
+//   };
+
   const fetchInvestmentOptions = async (type: string, query: string) => {
-    // Replace with actual API call
-    const mockData = [
-      { id: 1, name: `${type} Option 1`, price: 100 },
-      { id: 2, name: `${type} Option 2`, price: 200 },
-      { id: 3, name: `${type} Option 3`, price: 300 },
-    ];
-    setSearchResults(mockData);
+    if (type === 'STOCK') {
+      if (query) {
+        const filteredStocks = stocksData.filter(stock => 
+          stock.ticker.toLowerCase().includes(query.toLowerCase()) ||
+          stock.name.toLowerCase().includes(query.toLowerCase())
+        ).slice(0, 15);  // Limit to first 15 matches
+        setSearchResults(filteredStocks.map(stock => ({
+          id: stock.ticker,
+          name: `${stock.name} (${stock.ticker})`,
+          price: stock.price
+        })));
+      } else {
+        setSearchResults(stocksData.slice(0, 15).map(stock => ({  // Show first 15 stocks
+          id: stock.ticker,
+          name: `${stock.name} (${stock.ticker})`,
+          price: stock.price
+        })));
+      }
+    } else if (type === 'ETF') {
+      const filtered = query 
+        ? etfsData.filter(etf => 
+            etf.ticker.toLowerCase().includes(query.toLowerCase()) ||
+            etf.name.toLowerCase().includes(query.toLowerCase())
+          ).slice(0, 15)  // Limit to first 15 matches
+        : etfsData.slice(0, 15);  // Show first 15 ETFs
+      setSearchResults(filtered.map(etf => ({
+        id: etf.ticker,
+        name: `${etf.name} (${etf.ticker})`,
+        price: etf.price
+      })));
+    } else if (type === 'GIC') {
+      const filtered = query
+        ? gicsData.filter(gic => 
+            gic.name.toLowerCase().includes(query.toLowerCase())
+          ).slice(0, 15)  // Limit to first 15 matches
+        : gicsData.slice(0, 15);  // Show first 15 GICs
+      setSearchResults(filtered.map(gic => ({
+        id: gic.id,
+        name: `${gic.name} (${gic.rate}%)`,
+        price: 100
+      })));
+    }
   };
 
-  const handleTypeSelect = (type: 'ETF' | 'GIC' | 'STOCK') => {
+  // Modify useEffect to run when type changes
+  useEffect(() => {
+    if (!selectedType) return;
+    
+    const timer = setTimeout(() => {
+      fetchInvestmentOptions(selectedType, searchQuery);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, selectedType]);
+
+  const handleTypeSelect = async (type: 'ETF' | 'GIC' | 'STOCK') => {
     setSelectedType(type);
     setSearchQuery('');
-    fetchInvestmentOptions(type, '');
+    // Immediately fetch options when type is selected
+    await fetchInvestmentOptions(type, '');
   };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    fetchInvestmentOptions(selectedType!, query);
   };
 
   const handleBuy = (item: any) => {
-    if (investmentAmount <= 0 || investmentAmount > coins) {
-      alert('Invalid investment amount');
+    const itemQuantity = quantities[item.id] || 0;
+    const totalCost = item.price * itemQuantity;
+    
+    if (itemQuantity <= 0 || totalCost > coins) {
+      alert('Invalid quantity or insufficient funds');
       return;
     }
 
-    setCoins(coins - investmentAmount);
+    setCoins(coins - totalCost);
     setPortfolio(prev => ({
       ...prev,
-      [selectedType!]: prev[selectedType!] + investmentAmount
+      [selectedType!]: {
+        ...prev[selectedType!],
+        [item.id]: (prev[selectedType!][item.id] || 0) + itemQuantity
+      }
     }));
-    setEarnings(prev => [...prev, prev[prev.length - 1] + (investmentAmount * 0.1)]); // Mock 10% return
+
+    // Update earnings based on investment type
+    const returnRate = selectedType === 'GIC' ? 0.05 : 0.1;
+    setEarnings(prev => [...prev, prev[prev.length - 1] + (totalCost * returnRate)]);
+    
+    // Reset quantity after purchase
+    setQuantities(prev => ({
+      ...prev,
+      [item.id]: 0
+    }));
   };
+
+
 
   return (
     <div className="p-4 max-w-7xl mx-auto">
@@ -159,9 +259,12 @@ export default function Invest() {
                 <div className="flex gap-2">
                   <input
                     type="number"
-                    value={investmentAmount}
-                    onChange={(e) => setInvestmentAmount(Number(e.target.value))}
-                    placeholder="Amount to invest"
+                    value={quantities[item.id] || 0}
+                    onChange={(e) => setQuantities(prev => ({
+                      ...prev,
+                      [item.id]: Number(e.target.value)
+                    }))}
+                    placeholder="Quantity"
                     className="p-2 border rounded"
                   />
                   <button

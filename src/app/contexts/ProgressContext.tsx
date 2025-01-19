@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 import { UserProgress } from "../types/lesson";
 import { categories } from "../data/categories";
 
