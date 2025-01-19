@@ -1,5 +1,6 @@
 import React from "react";
 
+// Define the props for the FillBlankQuestion component
 interface FillBlankQuestionProps {
     question: string;
     segments: Array<{
@@ -13,12 +14,14 @@ interface FillBlankQuestionProps {
     isSubmitted: boolean;
 }
 
+// Define the FillBlankQuestion component
 export default function FillBlankQuestion(props: FillBlankQuestionProps) {
+    // Define the getInputStyle function to get the input style for each blank
     const getInputStyle = (index: number) => {
         if (!props.isSubmitted) {
             return "border-gray-200 focus:border-[#58CC02] focus:ring-[#58CC02]";
         }
-
+        // Try to get the correct answer for the current blank
         try {
             const blankSegments = props.segments.filter((seg) => seg.type === "blank");
             const correctAnswer = blankSegments[index]?.answer || "";
@@ -38,7 +41,7 @@ export default function FillBlankQuestion(props: FillBlankQuestionProps) {
     };
 
     const handleChange = (index: number, value: string) => {
-        // Find the index of this blank in the sequence ox  f blanks
+        // Find the index of this blank in the sequence of blanks
         const blankIndex = props.segments.filter((seg) => seg.type === "blank").findIndex((_, i) => i === index);
 
         if (blankIndex === -1) return;
@@ -61,12 +64,12 @@ export default function FillBlankQuestion(props: FillBlankQuestionProps) {
         return -1;
     };
 
-    return (
+    return ( // Return the FillBlankQuestion component
         <div className="flex flex-col items-center gap-4">
             <div className="text-center">
                 <h1 className="mb-3 text-lg font-bold text-gray-700">Fill in the blanks</h1>
             </div>
-
+            {/* Display the question segments */}
             <div className="w-full max-w-xl text-lg text-gray-700">
                 {props.segments.map((segment, index) => (
                     <span key={index} className="inline">

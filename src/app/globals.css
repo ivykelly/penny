@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Define the loading animation */
 @keyframes loading {
     0% {
         width: 0%;
@@ -17,11 +18,13 @@
     }
 }
 
+/* Define the root variables */
 :root {
     --background: theme("colors.red.50");
     --cText: theme("colors.pink.800");
 }
 
+/* Define the body styles */
 body {
     color: var(--cText);
     background: var(--background);

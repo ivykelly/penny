@@ -4,16 +4,19 @@ import { categories } from "../data/categories";
 
 const API_KEY = process.env.GEMINI_API_KEY;
 
+// Define the generateQuestionsWithGemini function
 async function generateQuestionsWithGemini(topic: string, lessonTitle: string): Promise<QuestionData[]> {
     if (!API_KEY) {
         throw Error("api key env var not defined");
     }
 
-    const genAI = new GoogleGenerativeAI(API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const MAX_ATTEMPTS = 5;
-    let attempt = 1;
+    // Define the GoogleGenerativeAI instance
+    const genAI = new GoogleGenerativeAI(API_KEY); // Create a new GoogleGenerativeAI instance
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Get the Gemini 1.5 Flash model
+    const MAX_ATTEMPTS = 5; // Define the maximum attempts 
+    let attempt = 1; // Define the attempt variable
 
+    // Define the prompt
     const prompt = `
             Generate 7 educational questions about ${topic} focusing on ${lessonTitle}.
             Make questions educational and progressively more challenging. It should start off very very easy like a kid should be able to answer the first category and then get progressively harder where the last category is very complex!
@@ -53,11 +56,12 @@ async function generateQuestionsWithGemini(topic: string, lessonTitle: string): 
             }
             `;
 
+    // Define the while loop
     while (attempt <= MAX_ATTEMPTS) {
         try {
-            const result = await model.generateContent(prompt);
-            const response = result.response;
-            let responseText = response.text();
+            const result = await model.generateContent(prompt); // Generate content from the model
+            const response = result.response; // Get the response
+            let responseText = response.text(); // Get the text from the response
 
             // Try to extract JSON if response is wrapped in backticks
             if (responseText.includes("```json")) {
@@ -69,14 +73,14 @@ async function generateQuestionsWithGemini(topic: string, lessonTitle: string): 
             // Clean up any remaining whitespace
             responseText = responseText.trim();
 
-            const questions = JSON.parse(responseText);
+            const questions = JSON.parse(responseText); // Parse the response text as JSON
 
             if (!Array.isArray(questions)) {
                 throw new Error("Gemini response is not an array");
             }
 
             if (questions.length !== 7) {
-                throw new Error(`Expected 7 questions but got ${questions.length}`);
+                throw new Error(`Expected 7 questions but got ${questions.length}`); // Throw an error if the number of questions is not 7
             }
 
             return validateQuestions(questions);
@@ -95,12 +99,13 @@ async function generateQuestionsWithGemini(topic: string, lessonTitle: string): 
     throw new Error("Failed to generate questions");
 }
 
+// Define the generateLesson function
 export async function generateLesson(categoryId: string, lessonIndex: number): Promise<LessonData> {
     const category = categories[categoryId];
-    if (!category) throw new Error("Invalid category");
+    if (!category) throw new Error("Invalid category"); // Throw an error if the category is not found
 
-    const lessonTitle = category.lessons[lessonIndex]?.title;
-    if (!lessonTitle) throw new Error("Invalid lesson index");
+    const lessonTitle = category.lessons[lessonIndex]?.title; // Get the lesson title
+    if (!lessonTitle) throw new Error("Invalid lesson index"); // Throw an error if the lesson title is not found
 
     const questions = await generateQuestionsWithGemini(category.title, lessonTitle);
 
@@ -115,11 +120,13 @@ interface UnknownRecord {
     [key: string]: unknown;
 }
 
+// Define the isTrueFalseQuestion function
 function isTrueFalseQuestion(q: unknown): q is TrueFalseQuestionData {
     const record = q as UnknownRecord;
     return typeof q === "object" && q !== null && record.type === "true-false" && typeof record.question === "string" && typeof record.correctAnswer === "boolean";
 }
 
+// Define the isMultipleChoiceQuestion function
 function isMultipleChoiceQuestion(q: unknown): q is MultipleChoiceQuestionData {
     const record = q as UnknownRecord;
     return typeof q === "object" && q !== null && record.type === "multiple-choice" && typeof record.question === "string" && Array.isArray(record.options) && record.options.length === 4 && record.options.every((opt) => typeof opt === "string") && typeof record.correctAnswer === "number" && Number.isInteger(record.correctAnswer) && record.correctAnswer >= 0 && record.correctAnswer < 4;
@@ -141,8 +148,9 @@ function isFillBlankQuestion(q: unknown): q is FillBlankQuestionData {
     );
 }
 
+// Define the validateQuestions function
 function validateQuestions(questions: unknown[]): QuestionData[] {
-    return questions.map((q) => {
+    return questions.map((q) => { 
         if (!q || typeof q !== "object") {
             throw new Error("Invalid question format");
         }

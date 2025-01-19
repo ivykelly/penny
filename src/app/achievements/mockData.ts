@@ -2,6 +2,8 @@ import { Achievement, Friend } from './types';
 
 export const achievements: Achievement[] = [
     {
+        // Create each achievement with a unique id, name, 
+        // description, isCompleted, category, icon, and coins
         id: 'first-step',
         name: 'First Step',
         description: 'Make your first investment',
@@ -59,6 +61,8 @@ export const achievements: Achievement[] = [
 
 export const mockFriends: Friend[] = [
     {
+        // Create each example friend with a unique id, name, rank, 
+        // achievementCount, totalCoins, and avatarUrl
         id: '1',
         name: 'Sarah Johnson',
         rank: 'Expert',
