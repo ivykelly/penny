@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { categories } from "./data/categories";
 import Footer from "./components/Footer";
+import CategoryProgress from "./components/CategoryProgress";
 
 // Define the learningPaths array
 const learningPaths = [
@@ -35,6 +36,7 @@ export default function Home() {
                         <Link href={categories[learningPaths[0].id] ? `/lessons?category=${learningPaths[0].id}&lesson=0` : "#"} className={`flex aspect-square w-full flex-col items-center justify-center rounded-full shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl ${getCategoryStyle(learningPaths[0].id)}`}>
                             <Image src={learningPaths[0].icon} alt={learningPaths[0].title} width={96} height={96} className="h-24 w-24" />
                         </Link>
+                        <CategoryProgress categoryId={learningPaths[0].id} />
                     </div>
                 </div>
 
@@ -46,6 +48,7 @@ export default function Home() {
                             <Link href={categories[path.id] ? `/lessons?category=${path.id}&lesson=0` : "#"} className={`flex aspect-square w-full flex-col items-center justify-center rounded-full shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl ${getCategoryStyle(path.id)}`}>
                                 <Image src={path.icon} alt={path.title} width={96} height={96} className="h-24 w-24" />
                             </Link>
+                            <CategoryProgress categoryId={path.id} />
                         </div>
                     ))}
                 </div>

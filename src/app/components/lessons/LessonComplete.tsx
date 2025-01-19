@@ -24,7 +24,7 @@ export default function LessonComplete({ lesson, categoryTitle, coinsEarned, onC
 
     // Define the getCoinDisplay function to get the coin display for the user
     const getCoinDisplay = () => {
-        if (coinsEarned === 0) return null; 
+        if (coinsEarned === 0) return null;
 
         const isPositive = coinsEarned > 0;
         const bgColor = isPositive ? "bg-[#e5f6d3]" : "bg-[#FFE8E8]";
@@ -48,7 +48,7 @@ export default function LessonComplete({ lesson, categoryTitle, coinsEarned, onC
     };
 
     return (
-        <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 pt-20">
+        <div className="mx-8 my-16 flex min-h-[60vh] flex-col items-center justify-center">
             <div className="relative w-full max-w-lg space-y-8 rounded-2xl bg-white p-8 text-center shadow-lg">
                 {/* Trophy Icon */}
                 <div className="absolute -top-12 left-1/2 -translate-x-1/2">

@@ -99,6 +99,9 @@ export default function Lesson({ lesson, onComplete, categoryTitle }: LessonProp
 
         setCoins(Math.max(0, coins + coinsChange));
         setNetCoinsChange((prev) => prev + coinsChange);
+
+        // Scroll to top of the page smoothly
+        window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
     const handleContinue = () => {

@@ -11,8 +11,6 @@ import { mutualFundsData } from "../data/mutualFunds";
 // Register ChartJS components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Title, Tooltip, Legend);
 
-
-
 // Define the shape of the InvestmentItem
 interface InvestmentItem {
     id: string;
@@ -31,11 +29,24 @@ interface Portfolio {
 export default function Invest() {
     const [selectedType, setSelectedType] = useState<"ETF" | "MUTUAL" | "STOCK" | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
-    const [portfolio, setPortfolio] = useState<Portfolio>({
-        ETF: {},
-        MUTUAL: {},
-        STOCK: {},
-    }); // Define the portfolio
+    const [portfolio, setPortfolio] = useState<Portfolio>(() => {
+        // Try to load portfolio from localStorage on initial render
+        if (typeof window !== "undefined") {
+            const savedPortfolio = localStorage.getItem("portfolio");
+            return savedPortfolio
+                ? JSON.parse(savedPortfolio)
+                : {
+                      ETF: {},
+                      MUTUAL: {},
+                      STOCK: {},
+                  };
+        }
+        return {
+            ETF: {},
+            MUTUAL: {},
+            STOCK: {},
+        };
+    });
     const { coins, setCoins } = useCoin(); // Get the user's coins
     const [earnings, setEarnings] = useState<number[]>([10000]); // Historical earnings data
     const [searchResults, setSearchResults] = useState<InvestmentItem[]>([]); // Will store API results
@@ -55,7 +66,7 @@ export default function Invest() {
                 data: earnings,
                 borderColor: "rgb(75, 192, 192)",
                 tension: 0.1,
-                backgroundColor: "rgb(229, 231, 235)"
+                backgroundColor: "rgb(229, 231, 235)",
             },
         ],
     };
@@ -77,9 +88,9 @@ export default function Invest() {
             legend: {
                 labels: {
                     boxWidth: 20,
-                    padding: 20
-                }
-            }
+                    padding: 20,
+                },
+            },
         },
     };
 
@@ -102,12 +113,17 @@ export default function Invest() {
 
     // Define the fetchInvestmentOptions function
     const fetchInvestmentOptions = async (type: string, query: string) => {
-        if (type === "STOCK") { // If the selected type is stocks
-            if (query) { // If there is a search query
+        if (type === "STOCK") {
+            // If the selected type is stocks
+            if (query) {
+                // If there is a search query
                 const filteredStocks = stocksData.filter((stock) => stock.ticker.toLowerCase().includes(query.toLowerCase()) || stock.name.toLowerCase().includes(query.toLowerCase())).slice(0, 15);
-                setSearchResults( // Set the search results
-                    filteredStocks.map( // Map the filtered stocks to the search results
-                        (stock): InvestmentItem => ({ // Define the shape of the investment item
+                setSearchResults(
+                    // Set the search results
+                    filteredStocks.map(
+                        // Map the filtered stocks to the search results
+                        (stock): InvestmentItem => ({
+                            // Define the shape of the investment item
                             id: stock.ticker, // Define the id of the investment item
                             name: `${stock.name} (${stock.ticker})`, // Define the name of the investment item
                             price: stock.price, // Define the price of the investment item
@@ -115,9 +131,12 @@ export default function Invest() {
                     ),
                 );
             } else {
-                setSearchResults( // Set the search results
-                    stocksData.slice(0, 15).map( // Map the stocks to the search results
-                        (stock): InvestmentItem => ({ // Define the shape of the investment item
+                setSearchResults(
+                    // Set the search results
+                    stocksData.slice(0, 15).map(
+                        // Map the stocks to the search results
+                        (stock): InvestmentItem => ({
+                            // Define the shape of the investment item
                             id: stock.ticker, // Define the id of the investment item
                             name: `${stock.name} (${stock.ticker})`, // Define the name of the investment item
                             price: stock.price, // Define the price of the investment item
@@ -125,11 +144,15 @@ export default function Invest() {
                     ),
                 );
             }
-        } else if (type === "ETF") { // If the selected type is etfs 
+        } else if (type === "ETF") {
+            // If the selected type is etfs
             const filtered = query ? etfsData.filter((etf) => etf.ticker.toLowerCase().includes(query.toLowerCase()) || etf.name.toLowerCase().includes(query.toLowerCase())).slice(0, 15) : etfsData.slice(0, 15);
-            setSearchResults( // Set the search results
-                filtered.map( // Map the filtered etfs to the search results
-                    (etf): InvestmentItem => ({ // Define the shape of the investment item
+            setSearchResults(
+                // Set the search results
+                filtered.map(
+                    // Map the filtered etfs to the search results
+                    (etf): InvestmentItem => ({
+                        // Define the shape of the investment item
                         id: etf.ticker, // Define the id of the investment item
                         name: `${etf.name} (${etf.ticker})`, // Define the name of the investment item
                         price: etf.price, // Define the price of the investment item
@@ -137,18 +160,15 @@ export default function Invest() {
                 ),
             );
         } else if (type === "MUTUAL") {
-            const filtered = query 
-                ? mutualFundsData.filter(fund => 
-                    fund.id.toLowerCase().includes(query.toLowerCase()) ||
-                    fund.name.toLowerCase().includes(query.toLowerCase())
-                ).slice(0, 15)
-                : mutualFundsData.slice(0, 15);
+            const filtered = query ? mutualFundsData.filter((fund) => fund.id.toLowerCase().includes(query.toLowerCase()) || fund.name.toLowerCase().includes(query.toLowerCase())).slice(0, 15) : mutualFundsData.slice(0, 15);
             setSearchResults(
-                filtered.map((fund): InvestmentItem => ({
-                    id: fund.id,
-                    name: `${fund.name} (${fund.id})`,
-                    price: fund.price,
-                }))
+                filtered.map(
+                    (fund): InvestmentItem => ({
+                        id: fund.id,
+                        name: `${fund.name} (${fund.id})`,
+                        price: fund.price,
+                    }),
+                ),
             );
         }
     };
@@ -163,6 +183,11 @@ export default function Invest() {
 
         return () => clearTimeout(timer);
     }, [searchQuery, selectedType]);
+
+    // Add useEffect to save portfolio changes to localStorage
+    useEffect(() => {
+        localStorage.setItem("portfolio", JSON.stringify(portfolio));
+    }, [portfolio]);
 
     const handleTypeSelect = async (type: "ETF" | "MUTUAL" | "STOCK") => {
         setSelectedType(type);
@@ -180,7 +205,8 @@ export default function Invest() {
         const itemQuantity = quantities[item.id] || 0;
         const totalCost = item.price * itemQuantity;
 
-        if (itemQuantity <= 0 || totalCost > coins) { // If the quantity is less than or equal to 0 or the total cost is greater than the user's coins
+        if (itemQuantity <= 0 || totalCost > coins) {
+            // If the quantity is less than or equal to 0 or the total cost is greater than the user's coins
             alert("Invalid quantity or insufficient funds"); // Alert the user
             return; // Return from the function
         }
@@ -210,10 +236,10 @@ export default function Invest() {
         <div className="mx-auto max-w-7xl p-4">
             {/* Charts Row */}
             <div className="mb-8 flex flex-col gap-4">
-                <div className="rounded-lg border p-4 bg-white">
+                <div className="rounded-lg border bg-white p-4">
                     <Line data={lineChartData} options={chartOptions} />
                 </div>
-                <div className="rounded-lg border p-4 bg-white">
+                <div className="rounded-lg border bg-white p-4">
                     <Pie data={pieChartData} options={chartOptions} />
                 </div>
             </div>
@@ -241,7 +267,6 @@ export default function Invest() {
                 <div className="mb-4">
                     <input type="text" value={searchQuery} onChange={(e) => handleSearch(e.target.value)} placeholder={`Search ${selectedType}s...`} className="mb-4 w-full rounded border p-2" />
 
-                
                     <div className="grid grid-cols-1 gap-4">
                         {searchResults.map((item) => (
                             <div key={item.id} className="flex items-center justify-between rounded border p-4">

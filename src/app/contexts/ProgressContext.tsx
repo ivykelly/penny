@@ -23,24 +23,28 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     // Define the completeLesson function to complete a lesson
     const completeLesson = (categoryId: string, lessonIndex: number) => {
         const categoryProgress = progress[categoryId] || { completedLessons: [], currentLessonIndex: 0 };
-        const newProgress = {
-            ...progress,
-            [categoryId]: { // Add the category to the progress
-                completedLessons: [...new Set([...categoryProgress.completedLessons, lessonIndex])], // Add the lesson to the completed lessons
-                currentLessonIndex: lessonIndex + 1, // Update the current lesson index
-            },
-        };
-        setProgress(newProgress); // Update the progress
+
+        // Only add the lesson if it hasn't been completed yet
+        if (!categoryProgress.completedLessons.includes(lessonIndex)) {
+            const newProgress = {
+                ...progress,
+                [categoryId]: {
+                    completedLessons: [...categoryProgress.completedLessons, lessonIndex],
+                    currentLessonIndex: lessonIndex + 1,
+                },
+            };
+            setProgress(newProgress);
+        }
     };
 
     // Define the getCurrentLesson function to get the current lesson
     const getCurrentLesson = (categoryId: string) => {
-        return progress[categoryId]?.currentLessonIndex || 0; // Return the current lesson index
+        return progress[categoryId]?.currentLessonIndex || 0;
     };
 
     // Define the getTotalLessonsInCategory function to get the total lessons in a category
     const getTotalLessonsInCategory = (categoryId: string) => {
-        return categories[categoryId]?.lessons.length || 0; // Return the total lessons in the category
+        return categories[categoryId]?.lessons.length || 0;
     };
 
     // Define the getCategoryProgress function to get the progress of a category
