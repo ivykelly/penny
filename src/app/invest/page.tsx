@@ -6,13 +6,12 @@ import { useCoin } from "../contexts/CoinContext";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Title, Tooltip, Legend } from "chart.js";
 import { stocksData } from "../data/stocks";
 import { etfsData } from "../data/etfs";
-import { gicsData } from "../data/gics";
+import { mutualFundsData } from "../data/mutualFunds";
 
 // Register ChartJS components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Title, Tooltip, Legend);
 
-// const API_KEY = process.env.POLYGON_API_KEY;
-// const POPULAR_TICKERS = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'META', 'TSLA', 'NVDA', 'JPM', 'BAC', 'WMT'];
+
 
 interface InvestmentItem {
     id: string;
@@ -22,16 +21,16 @@ interface InvestmentItem {
 
 interface Portfolio {
     ETF: { [key: string]: number };
-    GIC: { [key: string]: number };
+    MUTUAL: { [key: string]: number };
     STOCK: { [key: string]: number };
 }
 
 export default function Invest() {
-    const [selectedType, setSelectedType] = useState<"ETF" | "GIC" | "STOCK" | null>(null);
+    const [selectedType, setSelectedType] = useState<"ETF" | "MUTUAL" | "STOCK" | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [portfolio, setPortfolio] = useState<Portfolio>({
         ETF: {},
-        GIC: {},
+        MUTUAL: {},
         STOCK: {},
     });
     const { coins, setCoins } = useCoin();
@@ -40,7 +39,7 @@ export default function Invest() {
     const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
 
     // Calculate total value for pie chart
-    const getTotalValue = (type: "ETF" | "GIC" | "STOCK") => {
+    const getTotalValue = (type: "ETF" | "MUTUAL" | "STOCK") => {
         return Object.values(portfolio[type]).reduce((sum, amount) => sum + amount, 0);
     };
 
@@ -53,18 +52,31 @@ export default function Invest() {
                 data: earnings,
                 borderColor: "rgb(75, 192, 192)",
                 tension: 0.1,
+                backgroundColor: "rgb(229, 231, 235)"
             },
         ],
     };
 
     const pieChartData = {
-        labels: ["ETFs", "GICs", "Stocks"],
+        labels: ["ETFs", "Mutual Funds", "Stocks"],
         datasets: [
             {
-                data: [getTotalValue("ETF"), getTotalValue("GIC"), getTotalValue("STOCK")],
+                data: [getTotalValue("ETF"), getTotalValue("MUTUAL"), getTotalValue("STOCK")],
                 backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)", "rgb(255, 205, 86)"],
             },
         ],
+    };
+
+    // chart options for consistent styling
+    const chartOptions = {
+        plugins: {
+            legend: {
+                labels: {
+                    boxWidth: 20,
+                    padding: 20
+                }
+            }
+        },
     };
 
     //   const fetchStockPrice = async (ticker: string) => {
@@ -119,16 +131,19 @@ export default function Invest() {
                     }),
                 ),
             );
-        } else if (type === "GIC") {
-            const filtered = query ? gicsData.filter((gic) => gic.name.toLowerCase().includes(query.toLowerCase())).slice(0, 15) : gicsData.slice(0, 15);
+        } else if (type === "MUTUAL") {
+            const filtered = query 
+                ? mutualFundsData.filter(fund => 
+                    fund.id.toLowerCase().includes(query.toLowerCase()) ||
+                    fund.name.toLowerCase().includes(query.toLowerCase())
+                ).slice(0, 15)
+                : mutualFundsData.slice(0, 15);
             setSearchResults(
-                filtered.map(
-                    (gic): InvestmentItem => ({
-                        id: gic.id,
-                        name: `${gic.name} (${gic.rate}%)`,
-                        price: 100,
-                    }),
-                ),
+                filtered.map((fund): InvestmentItem => ({
+                    id: fund.id,
+                    name: `${fund.name} (${fund.id})`,
+                    price: fund.price,
+                }))
             );
         }
     };
@@ -144,7 +159,7 @@ export default function Invest() {
         return () => clearTimeout(timer);
     }, [searchQuery, selectedType]);
 
-    const handleTypeSelect = async (type: "ETF" | "GIC" | "STOCK") => {
+    const handleTypeSelect = async (type: "ETF" | "MUTUAL" | "STOCK") => {
         setSelectedType(type);
         setSearchQuery("");
         // Immediately fetch options when type is selected
@@ -174,7 +189,7 @@ export default function Invest() {
         }));
 
         // Update earnings based on investment type
-        const returnRate = selectedType === "GIC" ? 0.05 : 0.1;
+        const returnRate = 0.1;
         setEarnings((prev) => [...prev, prev[prev.length - 1] + totalCost * returnRate]);
 
         // Reset quantity after purchase
@@ -188,11 +203,11 @@ export default function Invest() {
         <div className="mx-auto max-w-7xl p-4">
             {/* Charts Row */}
             <div className="mb-8 flex flex-col gap-4">
-                <div className="rounded-lg border p-4">
-                    <Line data={lineChartData} />
+                <div className="rounded-lg border p-4 bg-white">
+                    <Line data={lineChartData} options={chartOptions} />
                 </div>
-                <div className="rounded-lg border p-4">
-                    <Pie data={pieChartData} />
+                <div className="rounded-lg border p-4 bg-white">
+                    <Pie data={pieChartData} options={chartOptions} />
                 </div>
             </div>
 
@@ -201,8 +216,8 @@ export default function Invest() {
                 <button onClick={() => handleTypeSelect("ETF")} className={`rounded px-4 py-2 ${selectedType === "ETF" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>
                     ETFs
                 </button>
-                <button onClick={() => handleTypeSelect("GIC")} className={`rounded px-4 py-2 ${selectedType === "GIC" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>
-                    GICs
+                <button onClick={() => handleTypeSelect("MUTUAL")} className={`rounded px-4 py-2 ${selectedType === "MUTUAL" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>
+                    Mutual Funds
                 </button>
                 <button onClick={() => handleTypeSelect("STOCK")} className={`rounded px-4 py-2 ${selectedType === "STOCK" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>
                     Stocks
@@ -224,7 +239,7 @@ export default function Invest() {
                             <div key={item.id} className="flex items-center justify-between rounded border p-4">
                                 <div>
                                     <h3 className="font-bold">{item.name}</h3>
-                                    <p>Price: ${item.price}</p>
+                                    <p>Price per share: ${item.price}</p>
                                 </div>
                                 <div className="flex gap-2">
                                     <input
