@@ -3,6 +3,7 @@ import Link from "next/link";
 import { categories } from "./data/categories";
 import Footer from "./components/Footer";
 
+// Define the learningPaths array
 const learningPaths = [
     { id: "1", title: "Basics", icon: "/icons/basics.png" },
     { id: "2", title: "Bonds", icon: "/icons/bonds.png" },
@@ -15,12 +16,15 @@ const learningPaths = [
     { id: "9", title: "Portfolio", icon: "/icons/portfolio.png" },
 ] as const;
 
+// Define the Home component
 export default function Home() {
-    const getCategoryStyle = (pathId: string) => {
+    // Define the getCategoryStyle function
+    const getCategoryStyle = (pathId: string) => { 
         if (!categories[pathId]) return "cursor-not-allowed bg-gray-100";
         return "bg-red-100 hover:bg-red-200";
     };
 
+    // Return the Home component
     return (
         <div className="mx-8 mb-40 mt-16 min-h-screen bg-background">
             <div className="mx-auto flex max-w-3xl flex-col items-center gap-y-10">

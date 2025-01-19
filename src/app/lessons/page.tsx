@@ -21,18 +21,20 @@ export default function LessonPage() {
     const { completeLesson } = useProgress();
     const categoryTitle = categoryId ? categories[categoryId]?.title : "";
 
+    // Define the useEffect hook to set the mounted state to true
     useEffect(() => {
         setMounted(true);
     }, []);
 
+    // Define the useEffect hook to load the lesson
     useEffect(() => {
         async function loadLesson() {
-            if (!categoryId) return;
+            if (!categoryId) return; // If there is no category id, return from the function
 
             try {
-                setLoading(true);
-                setError(null);
-                setAttempt(1);
+                setLoading(true); // Set the loading state to true
+                setError(null); // Set the error state to null
+                setAttempt(1); // Set the attempt state to 1
                 const lesson = await generateLesson(categoryId, lessonIndex).catch(async (error) => {
                     // If the error message indicates it was a retry attempt, increment our counter
                     if (error.message.includes("Attempt")) {
@@ -40,26 +42,28 @@ export default function LessonPage() {
                     }
                     throw error;
                 });
-                setCurrentLesson(lesson);
+                setCurrentLesson(lesson); // Set the current lesson
                 // Scroll to top when lesson loads
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to the top of the page
             } catch (error) {
                 console.error("Failed to generate lesson:", error);
-                setError((error as Error).message || "Failed to generate lesson");
+                setError((error as Error).message || "Failed to generate lesson"); // Set the error state to the error message
             } finally {
-                setLoading(false);
+                setLoading(false); // Set the loading state to false
             }
         }
 
+        // If the mounted state is true, load the lesson
         if (mounted) {
             loadLesson();
         }
     }, [mounted, categoryId, lessonIndex, router]);
 
+    // Define the handleLessonComplete function
     const handleLessonComplete = () => {
         if (categoryId) {
-            completeLesson(categoryId, lessonIndex);
-            const nextLesson = lessonIndex + 1;
+            completeLesson(categoryId, lessonIndex); // Complete the lesson
+            const nextLesson = lessonIndex + 1; // Set the next lesson to the lesson index plus 1
             if (nextLesson < 3) {
                 // Now hardcoded to 3 lessons per category
                 router.push(`/lessons?category=${categoryId}&lesson=${nextLesson}`);
@@ -69,6 +73,7 @@ export default function LessonPage() {
         }
     };
 
+    // If the mounted state is false or the loading state is true, return the loading component
     if (!mounted || loading) {
         return (
             <div className="fixed inset-0 flex items-center justify-center bg-background">
@@ -86,6 +91,7 @@ export default function LessonPage() {
         );
     }
 
+    // If the error state is not null, return the error component
     if (error) {
         return (
             <div className="flex min-h-screen items-center justify-center">
@@ -100,6 +106,7 @@ export default function LessonPage() {
         );
     }
 
+    // If the current lesson is not null, return the lesson component
     if (!currentLesson) {
         return <p>Failed to load lesson</p>;
     }

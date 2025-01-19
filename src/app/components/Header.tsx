@@ -1,6 +1,7 @@
 import Coin from "@/app/components/Coin";
 import Link from "next/link";
 
+// Define the Header component
 export default function Header() {
     return (
         <div className="mb-[15vh] h-24">

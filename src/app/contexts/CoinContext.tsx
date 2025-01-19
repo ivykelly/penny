@@ -16,9 +16,10 @@ interface CoinProviderProps {
     children: ReactNode;
 }
 
+// Define the CoinProvider component
 export const CoinProvider: React.FC<CoinProviderProps> = ({ children }) => {
     const [coins, setCoins] = useState(100); // set default coins to 100
-
+    // Return the CoinProvider component
     return <CoinContext.Provider value={{ coins, setCoins }}>{children}</CoinContext.Provider>;
 };
 

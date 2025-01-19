@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { LessonData } from "@/app/types/lesson";
 import Image from "next/image";
 
+// Define the props for the LessonComplete component
 interface LessonCompleteProps {
     lesson: LessonData;
     categoryTitle: string;
@@ -11,16 +12,19 @@ interface LessonCompleteProps {
     onComplete: () => void;
 }
 
+// Define the LessonComplete component
 export default function LessonComplete({ lesson, categoryTitle, coinsEarned, onComplete }: LessonCompleteProps) {
     const router = useRouter();
 
+    // Define the handleReturnHome function to handle the user's return to the home page
     const handleReturnHome = () => {
         onComplete();
         router.push("/");
     };
 
+    // Define the getCoinDisplay function to get the coin display for the user
     const getCoinDisplay = () => {
-        if (coinsEarned === 0) return null;
+        if (coinsEarned === 0) return null; 
 
         const isPositive = coinsEarned > 0;
         const bgColor = isPositive ? "bg-[#e5f6d3]" : "bg-[#FFE8E8]";
@@ -28,6 +32,7 @@ export default function LessonComplete({ lesson, categoryTitle, coinsEarned, onC
         const label = isPositive ? "Coins earned" : "Coins lost";
         const prefix = isPositive ? "+" : "";
 
+        // Return the coin display for the user
         return (
             <div className={`rounded-xl ${bgColor} p-4`}>
                 <p className={`mb-2 text-sm font-medium ${textColor}`}>{label} this lesson</p>
@@ -52,6 +57,7 @@ export default function LessonComplete({ lesson, categoryTitle, coinsEarned, onC
                     </div>
                 </div>
 
+                {/* Lesson Complete Text */}
                 <div className="mt-8">
                     <h1 className="text-3xl font-bold text-[#58CC02]">Lesson Complete!</h1>
                     <p className="mt-4 text-xl text-gray-600">
@@ -63,8 +69,10 @@ export default function LessonComplete({ lesson, categoryTitle, coinsEarned, onC
                     </p>
                 </div>
 
+                {/* Coin Display */}
                 {getCoinDisplay()}
 
+                {/* Continue Learning Button */}
                 <button onClick={handleReturnHome} className="mt-8 w-full rounded-xl bg-[#58CC02] py-3 text-lg font-bold text-white shadow-[0_4px_0_0_#4CAD01] transition-all hover:bg-[#4CAD01] hover:shadow-[0_2px_0_0_#3B8C01] active:translate-y-[2px] active:shadow-[0_2px_0_0_#3B8C01]">
                     Continue Learning
                 </button>
