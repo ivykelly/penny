@@ -1,4 +1,4 @@
-import { QuestionData, LessonData } from "../types/lesson";
+import { QuestionData, LessonData, TrueFalseQuestionData, MultipleChoiceQuestionData, FillBlankQuestionData } from "../types/lesson";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { categories } from "../data/categories";
 
@@ -11,6 +11,8 @@ async function generateQuestionsWithGemini(topic: string, lessonTitle: string): 
 
     const genAI = new GoogleGenerativeAI(API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const MAX_ATTEMPTS = 5;
+    let attempt = 1;
 
     const prompt = `
             Generate 7 educational questions about ${topic} focusing on ${lessonTitle}.
@@ -51,39 +53,46 @@ async function generateQuestionsWithGemini(topic: string, lessonTitle: string): 
             }
             `;
 
-    try {
-        const result = await model.generateContent(prompt);
-        const response = result.response;
-        let responseText = response.text();
+    while (attempt <= MAX_ATTEMPTS) {
+        try {
+            const result = await model.generateContent(prompt);
+            const response = result.response;
+            let responseText = response.text();
 
-        // Try to extract JSON if response is wrapped in backticks
-        if (responseText.includes("```json")) {
-            responseText = responseText.split("```json")[1].split("```")[0];
-        } else if (responseText.startsWith("```") && responseText.endsWith("```")) {
-            responseText = responseText.slice(3, -3);
+            // Try to extract JSON if response is wrapped in backticks
+            if (responseText.includes("```json")) {
+                responseText = responseText.split("```json")[1].split("```")[0];
+            } else if (responseText.startsWith("```") && responseText.endsWith("```")) {
+                responseText = responseText.slice(3, -3);
+            }
+
+            // Clean up any remaining whitespace
+            responseText = responseText.trim();
+
+            const questions = JSON.parse(responseText);
+
+            if (!Array.isArray(questions)) {
+                throw new Error("Gemini response is not an array");
+            }
+
+            if (questions.length !== 7) {
+                throw new Error(`Expected 7 questions but got ${questions.length}`);
+            }
+
+            return validateQuestions(questions);
+        } catch (error) {
+            console.error(`Attempt ${attempt} failed:`, error);
+            if (attempt === MAX_ATTEMPTS) {
+                throw new Error("Failed to generate questions after multiple attempts: " + (error as Error).message);
+            }
+            attempt++;
+            // Add a small delay between retries
+            await new Promise((resolve) => setTimeout(resolve, 1000));
         }
-
-        // Clean up any remaining whitespace
-        responseText = responseText.trim();
-
-        const questions = JSON.parse(responseText);
-
-        if (!Array.isArray(questions)) {
-            throw new Error("Gemini response is not an array");
-        }
-
-        if (questions.length !== 7) {
-            throw new Error(`Expected 7 questions but got ${questions.length}`);
-        }
-
-        return validateQuestions(questions);
-    } catch (error) {
-        console.error("Error generating questions:", error);
-        if (error instanceof SyntaxError) {
-            throw new Error("Failed to parse Gemini response as JSON. Please try again.");
-        }
-        throw new Error("Failed to generate questions with Gemini: " + (error as Error).message);
     }
+
+    // This should never be reached due to the throw in the last attempt
+    throw new Error("Failed to generate questions");
 }
 
 export async function generateLesson(categoryId: string, lessonIndex: number): Promise<LessonData> {
@@ -102,27 +111,50 @@ export async function generateLesson(categoryId: string, lessonIndex: number): P
     };
 }
 
-function validateQuestions(questions: any[]): QuestionData[] {
+interface UnknownRecord {
+    [key: string]: unknown;
+}
+
+function isTrueFalseQuestion(q: unknown): q is TrueFalseQuestionData {
+    const record = q as UnknownRecord;
+    return typeof q === "object" && q !== null && record.type === "true-false" && typeof record.question === "string" && typeof record.correctAnswer === "boolean";
+}
+
+function isMultipleChoiceQuestion(q: unknown): q is MultipleChoiceQuestionData {
+    const record = q as UnknownRecord;
+    return typeof q === "object" && q !== null && record.type === "multiple-choice" && typeof record.question === "string" && Array.isArray(record.options) && record.options.length === 4 && record.options.every((opt) => typeof opt === "string") && typeof record.correctAnswer === "number" && Number.isInteger(record.correctAnswer) && record.correctAnswer >= 0 && record.correctAnswer < 4;
+}
+
+function isFillBlankQuestion(q: unknown): q is FillBlankQuestionData {
+    const record = q as UnknownRecord;
+    return (
+        typeof q === "object" &&
+        q !== null &&
+        record.type === "fill-blank" &&
+        typeof record.question === "string" &&
+        Array.isArray(record.segments) &&
+        record.segments.every((segment: unknown) => {
+            if (typeof segment !== "object" || segment === null) return false;
+            const seg = segment as UnknownRecord;
+            return (seg.type === "text" || seg.type === "blank") && typeof seg.content === "string" && (seg.answer === undefined || typeof seg.answer === "string") && (seg.placeholder === undefined || typeof seg.placeholder === "string");
+        })
+    );
+}
+
+function validateQuestions(questions: unknown[]): QuestionData[] {
     return questions.map((q) => {
-        switch (q.type) {
-            case "true-false":
-                if (typeof q.question !== "string" || typeof q.correctAnswer !== "boolean") {
-                    throw new Error("Invalid true-false question format");
-                }
-                break;
-            case "multiple-choice":
-                if (!Array.isArray(q.options) || q.options.length !== 4 || typeof q.correctAnswer !== "number") {
-                    throw new Error("Invalid multiple-choice question format");
-                }
-                break;
-            case "fill-blank":
-                if (!Array.isArray(q.segments)) {
-                    throw new Error("Invalid fill-blank question format");
-                }
-                break;
-            default:
-                throw new Error(`Unknown question type: ${q.type}`);
+        if (!q || typeof q !== "object") {
+            throw new Error("Invalid question format");
         }
-        return q as QuestionData;
+
+        if (isTrueFalseQuestion(q)) {
+            return q;
+        } else if (isMultipleChoiceQuestion(q)) {
+            return q;
+        } else if (isFillBlankQuestion(q)) {
+            return q;
+        }
+
+        throw new Error(`Invalid question format or unknown question type`);
     });
 }

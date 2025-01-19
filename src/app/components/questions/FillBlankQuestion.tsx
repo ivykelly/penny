@@ -38,7 +38,7 @@ export default function FillBlankQuestion(props: FillBlankQuestionProps) {
     };
 
     const handleChange = (index: number, value: string) => {
-        // Find the index of this blank in the sequence of blanks
+        // Find the index of this blank in the sequence ox  f blanks
         const blankIndex = props.segments.filter((seg) => seg.type === "blank").findIndex((_, i) => i === index);
 
         if (blankIndex === -1) return;

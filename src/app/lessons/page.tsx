@@ -15,6 +15,7 @@ export default function LessonPage() {
     const [currentLesson, setCurrentLesson] = useState<LessonData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [attempt, setAttempt] = useState(1);
     const categoryId = searchParams.get("category");
     const lessonIndex = parseInt(searchParams.get("lesson") || "0");
     const { completeLesson } = useProgress();
@@ -31,8 +32,17 @@ export default function LessonPage() {
             try {
                 setLoading(true);
                 setError(null);
-                const lesson = await generateLesson(categoryId, lessonIndex);
+                setAttempt(1);
+                const lesson = await generateLesson(categoryId, lessonIndex).catch(async (error) => {
+                    // If the error message indicates it was a retry attempt, increment our counter
+                    if (error.message.includes("Attempt")) {
+                        setAttempt((prev) => Math.min(prev + 1, 5));
+                    }
+                    throw error;
+                });
                 setCurrentLesson(lesson);
+                // Scroll to top when lesson loads
+                window.scrollTo({ top: 0, behavior: "smooth" });
             } catch (error) {
                 console.error("Failed to generate lesson:", error);
                 setError((error as Error).message || "Failed to generate lesson");
@@ -69,6 +79,7 @@ export default function LessonPage() {
                         <div className="h-1.5 w-48 overflow-hidden rounded-full bg-gray-200">
                             <div className="h-full animate-[loading_1s_ease-in-out_infinite] bg-[#58CC02]" />
                         </div>
+                        {attempt > 1 && <p className="mt-1 text-sm text-gray-500">Attempt {attempt} of 5</p>}
                     </div>
                 </div>
             </div>
