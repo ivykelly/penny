@@ -18,7 +18,6 @@ export const CoinProvider: React.FC<CoinProviderProps> = ({ children }) => {
     return <CoinContext.Provider value={{ coins, setCoins }}>{children}</CoinContext.Provider>;
 };
 
-// custom hook to use the coin context
 export const useCoin = (): CoinContextType => {
     const context = useContext(CoinContext);
     if (!context) {
