@@ -1,17 +1,16 @@
 import Coin from "@/app/components/Coin";
-import InvestButton from "./InvestButton";
 import Link from "next/link";
 
 export default function Header() {
     return (
-        <div className="mx-4 mt-4 flex flex-row items-center justify-between bg-background">
-            <div className="rounded-2xl border-2 border-red-100 px-2">
-                <Coin />
-            </div>
-            <Link href="/" className="text-2xl font-extrabold">
+        <div className="mb-[15vh] h-24">
+            <Link href="/" className="absolute left-5 top-8 rounded-3xl px-4 py-2 text-[3.5rem] font-extrabold">
                 Penny
             </Link>
-            <InvestButton />
+
+            <div className="absolute right-5 top-5 rounded-2xl border-red-100 px-2">
+                <Coin />
+            </div>
         </div>
     );
 }

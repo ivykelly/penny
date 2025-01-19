@@ -7,9 +7,9 @@ export default function Coin() {
     const { coins } = useCoin();
 
     return (
-        <div className="flex flex-row items-center gap-4">
-            <Image src="/pennyWithCoin.png" alt="" width={644} height={686} className="max-w-16" />
-            <p className="font-extrabold text-[#58CC02]">{coins}p</p>
+        <div className="flex flex-col items-center">
+            <Image src="/pennyWithCoin.png" alt="" width={644} height={686} className="max-w-32" />
+            <p className="-mt-3 text-xl font-extrabold text-amber-400">{coins}p</p>
         </div>
     );
 }
