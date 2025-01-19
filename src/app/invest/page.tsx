@@ -233,7 +233,7 @@ export default function Invest() {
 
             {/* Balance Display */}
             <div className="mb-4">
-                <p className="text-lg font-bold">Available Balance: ${coins}</p>
+                <p className="text-lg font-bold">Available Balance: ${coins.toFixed(2)}</p>
             </div>
 
             {/* Search and Results */}
