@@ -17,7 +17,7 @@ interface CoinProviderProps {
 }
 
 export const CoinProvider: React.FC<CoinProviderProps> = ({ children }) => {
-    const [coins, setCoins] = useState(0);
+    const [coins, setCoins] = useState(100); // set default coins to 100
 
     return <CoinContext.Provider value={{ coins, setCoins }}>{children}</CoinContext.Provider>;
 };

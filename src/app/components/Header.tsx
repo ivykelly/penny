@@ -8,7 +8,7 @@ export default function Header() {
             <div className="rounded-2xl border-2 border-red-100 px-2">
                 <Coin />
             </div>
-            <Link href="/" className="text-2xl font-black">
+            <Link href="/" className="text-2xl font-extrabold">
                 Penny
             </Link>
             <InvestButton />
