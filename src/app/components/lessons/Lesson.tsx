@@ -7,22 +7,24 @@ import MultipleChoiceQuestion from "../questions/MultipleChoiceQuestion";
 import AnswerResponse from "../AnswerResponse";
 import { useCoin } from "@/app/contexts/CoinContext";
 import FillBlankQuestion from "../questions/FillBlankQuestion";
-import { useRouter } from "next/navigation";
+import LessonComplete from "./LessonComplete";
 
 interface LessonProps {
     lesson: LessonData;
     onComplete: () => void;
+    categoryTitle: string;
 }
 
 type AnswerType = boolean | number | string[];
 
-export default function Lesson({ lesson, onComplete }: LessonProps) {
+export default function Lesson({ lesson, onComplete, categoryTitle }: LessonProps) {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedAnswer, setSelectedAnswer] = useState<AnswerType | null>(null);
     const [showResponse, setShowResponse] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [isComplete, setIsComplete] = useState(false);
+    const [netCoinsChange, setNetCoinsChange] = useState(0);
     const { coins, setCoins } = useCoin();
-    const router = useRouter();
 
     const currentQuestion = lesson.questions[currentQuestionIndex];
 
@@ -50,6 +52,30 @@ export default function Lesson({ lesson, onComplete }: LessonProps) {
         }
     };
 
+    const getCorrectAnswerText = (question: QuestionData, userAnswer: AnswerType): string | undefined => {
+        if (question.type === "multiple-choice" && !checkAnswer(question, userAnswer)) {
+            return question.options[question.correctAnswer];
+        } else if (question.type === "fill-blank") {
+            const userAnswers = userAnswer as string[];
+            const blankSegments = question.segments.filter((seg) => seg.type === "blank");
+            const incorrectAnswers = blankSegments
+                .map((segment, index) => {
+                    const userAns = userAnswers[index]?.toLowerCase().trim() || "";
+                    const correctAns = segment.answer?.toLowerCase().trim() || "";
+                    if (userAns !== correctAns) {
+                        return correctAns;
+                    }
+                    return null;
+                })
+                .filter(Boolean);
+
+            if (incorrectAnswers.length > 0) {
+                return `Correct answer${incorrectAnswers.length > 1 ? "s" : ""}: ${incorrectAnswers.join(", ")}`;
+            }
+        }
+        return undefined;
+    };
+
     const handleTrueFalseSelect = (value: boolean) => {
         setSelectedAnswer(value);
     };
@@ -69,27 +95,28 @@ export default function Lesson({ lesson, onComplete }: LessonProps) {
         setShowResponse(true);
 
         const isCorrect = checkAnswer(currentQuestion, selectedAnswer);
+        const coinsChange = isCorrect ? 10 : -10;
 
-        if (isCorrect) {
-            setCoins(coins + 10);
-        } else {
-            setCoins(Math.max(0, coins - 10));
-        }
+        setCoins(Math.max(0, coins + coinsChange));
+        setNetCoinsChange((prev) => prev + coinsChange);
     };
 
     const handleContinue = () => {
-        setSelectedAnswer(null);
-        setShowResponse(false);
-        setIsSubmitted(false);
-
         if (currentQuestionIndex === lesson.questions.length - 1) {
-            onComplete();
-            router.push("/");
+            setIsComplete(true);
             return;
         }
 
+        // Batch all state updates together
         setCurrentQuestionIndex((prev) => prev + 1);
+        setSelectedAnswer(null);
+        setShowResponse(false);
+        setIsSubmitted(false);
     };
+
+    if (isComplete) {
+        return <LessonComplete lesson={lesson} categoryTitle={categoryTitle} coinsEarned={netCoinsChange} onComplete={onComplete} />;
+    }
 
     if (currentQuestionIndex >= lesson.questions.length) {
         return null;
@@ -122,7 +149,7 @@ export default function Lesson({ lesson, onComplete }: LessonProps) {
                 </div>
             </div>
 
-            <AnswerResponse isCorrect={selectedAnswer !== null && checkAnswer(currentQuestion, selectedAnswer)} show={showResponse} onContinue={handleContinue} correctAnswer={currentQuestion.type === "multiple-choice" && selectedAnswer !== null && !checkAnswer(currentQuestion, selectedAnswer) ? currentQuestion.options[currentQuestion.correctAnswer] : undefined} currentCoins={coins} />
+            <AnswerResponse isCorrect={selectedAnswer !== null && checkAnswer(currentQuestion, selectedAnswer)} show={showResponse} onContinue={handleContinue} correctAnswer={selectedAnswer !== null ? getCorrectAnswerText(currentQuestion, selectedAnswer) : undefined} currentCoins={coins} />
         </>
     );
 }

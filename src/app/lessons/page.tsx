@@ -6,6 +6,7 @@ import Lesson from "../components/lessons/Lesson";
 import { useProgress } from "../contexts/ProgressContext";
 import { LessonData } from "../types/lesson";
 import { generateLesson } from "../services/questionGenerator";
+import { categories } from "../data/categories";
 
 export default function LessonPage() {
     const searchParams = useSearchParams();
@@ -17,6 +18,7 @@ export default function LessonPage() {
     const categoryId = searchParams.get("category");
     const lessonIndex = parseInt(searchParams.get("lesson") || "0");
     const { completeLesson } = useProgress();
+    const categoryTitle = categoryId ? categories[categoryId]?.title : "";
 
     useEffect(() => {
         setMounted(true);
@@ -86,5 +88,5 @@ export default function LessonPage() {
         return <p>Failed to load lesson</p>;
     }
 
-    return <Lesson lesson={currentLesson} onComplete={handleLessonComplete} />;
+    return <Lesson lesson={currentLesson} onComplete={handleLessonComplete} categoryTitle={categoryTitle} />;
 }

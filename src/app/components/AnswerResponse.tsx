@@ -11,18 +11,18 @@ export default function AnswerResponse({ isCorrect, show, onContinue, correctAns
 
     const getMessage = () => {
         if (isCorrect) {
-            return "Correct! +10 coins";
+            return "Correct! +10 coins!";
         }
 
         if (currentCoins === 0) {
-            return "Incorrect";
+            return "Incorrect.";
         }
 
         if (currentCoins <= 10) {
-            return `Incorrect. -${currentCoins} coins`;
+            return `Incorrect. -${currentCoins} coins.`;
         }
 
-        return "Incorrect. -10 coins";
+        return "Incorrect. -10 coins.";
     };
 
     return (

@@ -28,8 +28,9 @@ async function generateQuestionsWithGemini(topic: string, lessonTitle: string): 
             - Progressive difficulty
 
             2 Fill-in-the-blank questions:
-            - Create sentences with 1-2 blanks
-            - Clear context for the correct answer
+            - Create a single flowing sentence with 2-3 blanks integrated naturally
+            - Clear context within the sentence for the correct answer
+            - The placeholder should be a short one word hint; it should not contain the answer
             - Appropriate difficulty level
 
             Format the response as a JSON array matching this structure:

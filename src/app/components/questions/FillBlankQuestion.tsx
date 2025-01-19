@@ -1,3 +1,5 @@
+import React from "react";
+
 interface FillBlankQuestionProps {
     question: string;
     segments: Array<{
@@ -56,13 +58,12 @@ export default function FillBlankQuestion(props: FillBlankQuestionProps) {
         <div className="flex flex-col items-center gap-4">
             <div className="text-center">
                 <h1 className="mb-3 text-lg font-bold text-gray-700">Fill in the blanks</h1>
-                <p className="text-base text-gray-600">{props.question}</p>
             </div>
 
-            <div className="flex w-full max-w-xl flex-wrap items-center justify-center gap-x-2 gap-y-3 text-base">
+            <div className="w-full max-w-xl text-lg text-gray-700">
                 {props.segments.map((segment, index) => (
-                    <span key={index} className="inline-flex items-center">
-                        {segment.type === "text" ? segment.content : <input type="text" value={props.selectedAnswer[getBlankIndex(index)] || ""} onChange={(e) => handleChange(getBlankIndex(index), e.target.value)} disabled={props.isSubmitted} placeholder={segment.placeholder || "Type here"} className={`w-28 rounded-lg border-2 px-2 py-1 text-center font-medium outline-none transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50 ${getInputStyle(getBlankIndex(index))}`} autoComplete="off" spellCheck="false" />}
+                    <span key={index} className="inline">
+                        {segment.type === "text" ? <span className="whitespace-pre-wrap">{segment.content}</span> : <input type="text" value={props.selectedAnswer[getBlankIndex(index)] || ""} onChange={(e) => handleChange(getBlankIndex(index), e.target.value)} disabled={props.isSubmitted} placeholder={segment.placeholder || "Type here"} className={`mx-1 inline-block w-28 rounded-lg border-2 px-2 py-1 text-center font-medium outline-none transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50 ${getInputStyle(getBlankIndex(index))}`} autoComplete="off" spellCheck="false" />}
                     </span>
                 ))}
             </div>
