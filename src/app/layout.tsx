@@ -22,15 +22,19 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className={`${manrope.className} antialiased sm:hidden`}>
-                <CoinProvider>
-                    <ProgressProvider>
-                        <Header />
-                        {children}
-                    </ProgressProvider>
-                </CoinProvider>
+            <body className={manrope.className}>
+                <div className="antialiased sm:hidden">
+                    <CoinProvider>
+                        <ProgressProvider>
+                            <Header />
+                            {children}
+                        </ProgressProvider>
+                    </CoinProvider>
+                </div>
+                <div className="hidden sm:block">
+                    <p className="text-3xl">This is a mobile app, unavailable on desktop.</p>
+                </div>
             </body>
-            <p className="text-3xl max-sm:hidden">This is a mobile app, unavailable on desktop.</p>
         </html>
     );
 }
