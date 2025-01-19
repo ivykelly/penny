@@ -13,14 +13,11 @@ interface ProgressContextType {
     isCategoryCompleted: (categoryId: string) => boolean;
 }
 
-// Create the context
 const ProgressContext = createContext<ProgressContextType | undefined>(undefined);
 
-// Define the ProgressProvider component
 export function ProgressProvider({ children }: { children: React.ReactNode }) {
     const [progress, setProgress] = useState<UserProgress>({});
 
-    // Define the completeLesson function to complete a lesson
     const completeLesson = (categoryId: string, lessonIndex: number) => {
         const categoryProgress = progress[categoryId] || { completedLessons: [], currentLessonIndex: 0 };
 

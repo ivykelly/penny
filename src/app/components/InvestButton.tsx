@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-// Define the InvestButton component
 export default function InvestButton() {
     return ( // Return the InvestButton component
         <div className="bg-red-50">
