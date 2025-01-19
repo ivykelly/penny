@@ -19,7 +19,7 @@ const learningPaths = [
 // Define the Home component
 export default function Home() {
     // Define the getCategoryStyle function
-    const getCategoryStyle = (pathId: string) => { 
+    const getCategoryStyle = (pathId: string) => {
         if (!categories[pathId]) return "cursor-not-allowed bg-gray-100";
         return "bg-red-100 hover:bg-red-200";
     };

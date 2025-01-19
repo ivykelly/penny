@@ -1,4 +1,4 @@
-"use client"; // Use client-side rendering
+"use client";
 
 import Image from "next/image";
 import { useCoin } from "../contexts/CoinContext";
@@ -7,7 +7,7 @@ import { useCoin } from "../contexts/CoinContext";
 export default function Coin() {
     const { coins } = useCoin(); // Get the user's coins
 
-    const coinsTruncated = Math.round((coins + Number.EPSILON) * 100) / 100;
+    const coinsTruncated = Math.round((coins + Number.EPSILON) * 100) / 100; // truncates to 2 decimal places
 
     return (
         <div className="flex flex-col items-center">
