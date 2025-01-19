@@ -2,24 +2,19 @@
 
 import React, { createContext, useState, useContext, ReactNode, Dispatch, SetStateAction } from "react";
 
-// define the shape of the context
 interface CoinContextType {
     coins: number;
     setCoins: Dispatch<SetStateAction<number>>;
 }
 
-// create context with proper typing
 const CoinContext = createContext<CoinContextType | undefined>(undefined);
 
-// define the provider's props
 interface CoinProviderProps {
     children: ReactNode;
 }
 
-// Define the CoinProvider component
 export const CoinProvider: React.FC<CoinProviderProps> = ({ children }) => {
     const [coins, setCoins] = useState(100); // set default coins to 100
-    // Return the CoinProvider component
     return <CoinContext.Provider value={{ coins, setCoins }}>{children}</CoinContext.Provider>;
 };
 

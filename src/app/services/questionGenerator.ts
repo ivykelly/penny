@@ -4,19 +4,16 @@ import { categories } from "../data/categories";
 
 const API_KEY = process.env.GEMINI_API_KEY;
 
-// Define the generateQuestionsWithGemini function
 async function generateQuestionsWithGemini(topic: string, lessonTitle: string): Promise<QuestionData[]> {
     if (!API_KEY) {
         throw Error("api key env var not defined");
     }
 
-    // Define the GoogleGenerativeAI instance
     const genAI = new GoogleGenerativeAI(API_KEY); // Create a new GoogleGenerativeAI instance
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Get the Gemini 1.5 Flash model
-    const MAX_ATTEMPTS = 5; // Define the maximum attempts 
+    const MAX_ATTEMPTS = 5; // Define the maximum attempts
     let attempt = 1; // Define the attempt variable
 
-    // Define the prompt
     const prompt = `
             Generate 7 educational questions about ${topic} focusing on ${lessonTitle}.
             Make questions educational and progressively more challenging. It should start off very very easy like a kid should be able to answer the first category and then get progressively harder where the last category is very complex!
@@ -56,7 +53,6 @@ async function generateQuestionsWithGemini(topic: string, lessonTitle: string): 
             }
             `;
 
-    // Define the while loop
     while (attempt <= MAX_ATTEMPTS) {
         try {
             const result = await model.generateContent(prompt); // Generate content from the model
@@ -120,13 +116,11 @@ interface UnknownRecord {
     [key: string]: unknown;
 }
 
-// Define the isTrueFalseQuestion function
 function isTrueFalseQuestion(q: unknown): q is TrueFalseQuestionData {
     const record = q as UnknownRecord;
     return typeof q === "object" && q !== null && record.type === "true-false" && typeof record.question === "string" && typeof record.correctAnswer === "boolean";
 }
 
-// Define the isMultipleChoiceQuestion function
 function isMultipleChoiceQuestion(q: unknown): q is MultipleChoiceQuestionData {
     const record = q as UnknownRecord;
     return typeof q === "object" && q !== null && record.type === "multiple-choice" && typeof record.question === "string" && Array.isArray(record.options) && record.options.length === 4 && record.options.every((opt) => typeof opt === "string") && typeof record.correctAnswer === "number" && Number.isInteger(record.correctAnswer) && record.correctAnswer >= 0 && record.correctAnswer < 4;
@@ -148,9 +142,8 @@ function isFillBlankQuestion(q: unknown): q is FillBlankQuestionData {
     );
 }
 
-// Define the validateQuestions function
 function validateQuestions(questions: unknown[]): QuestionData[] {
-    return questions.map((q) => { 
+    return questions.map((q) => {
         if (!q || typeof q !== "object") {
             throw new Error("Invalid question format");
         }

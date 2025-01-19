@@ -13,7 +13,6 @@ export default function CategoryProgress({ categoryId }: CategoryProgressProps) 
     const completedLessons = categoryProgress?.completedLessons?.length || 0;
     const totalLessons = categories[categoryId]?.lessons.length || 3;
 
-    // Helper function to check if a lesson is completed
     const isLessonCompleted = (index: number) => {
         if (!categoryProgress?.completedLessons) return false;
         return categoryProgress.completedLessons.includes(index);

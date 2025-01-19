@@ -1,6 +1,5 @@
 import React from "react";
 
-// Define the props for the FillBlankQuestion component
 interface FillBlankQuestionProps {
     question: string;
     segments: Array<{
@@ -14,7 +13,6 @@ interface FillBlankQuestionProps {
     isSubmitted: boolean;
 }
 
-// Define the FillBlankQuestion component
 export default function FillBlankQuestion(props: FillBlankQuestionProps) {
     // Define the getInputStyle function to get the input style for each blank
     const getInputStyle = (index: number) => {
@@ -64,7 +62,7 @@ export default function FillBlankQuestion(props: FillBlankQuestionProps) {
         return -1;
     };
 
-    return ( // Return the FillBlankQuestion component
+    return (
         <div className="flex flex-col items-center gap-4">
             <div className="text-center">
                 <h1 className="mb-3 text-lg font-bold text-gray-700">Fill in the blanks</h1>

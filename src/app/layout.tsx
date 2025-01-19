@@ -5,19 +5,16 @@ import Header from "./components/Header";
 import { CoinProvider } from "./contexts/CoinContext";
 import { ProgressProvider } from "./contexts/ProgressContext";
 
-// Define the Manrope font
 const manrope = Manrope({
     subsets: ["latin"],
     variable: "--font-manrope",
 });
 
-// Define the metadata
 export const metadata: Metadata = {
     title: "Penny",
     description: "invnesnting annappp",
 };
 
-// Define the RootLayout component
 export default function RootLayout({
     children,
 }: Readonly<{

@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useCoin } from "../contexts/CoinContext";
 
-// Define the Coin component
 export default function Coin() {
     const { coins } = useCoin(); // Get the user's coins
 

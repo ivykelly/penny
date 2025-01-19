@@ -5,9 +5,8 @@ interface TrueFalseQuestionProps {
     isSubmitted: boolean;
 }
 
-// Define the TrueFalseQuestion component
 export default function TrueFalseQuestion(props: TrueFalseQuestionProps) {
-    return ( // Return the TrueFalseQuestion component
+    return (
         <div className="flex flex-col items-center gap-4">
             <div className="text-center">
                 <h1 className="mb-3 text-lg font-bold text-gray-700">Select the correct answer</h1>

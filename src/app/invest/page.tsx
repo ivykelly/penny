@@ -11,21 +11,18 @@ import { mutualFundsData } from "../data/mutualFunds";
 // Register ChartJS components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Title, Tooltip, Legend);
 
-// Define the shape of the InvestmentItem
 interface InvestmentItem {
     id: string;
     name: string;
     price: number;
 }
 
-// Define the shape of the Portfolio
 interface Portfolio {
     ETF: { [key: string]: number };
     MUTUAL: { [key: string]: number };
     STOCK: { [key: string]: number };
 }
 
-// Define the Invest component
 export default function Invest() {
     const [selectedType, setSelectedType] = useState<"ETF" | "MUTUAL" | "STOCK" | null>(null);
     const [searchQuery, setSearchQuery] = useState("");

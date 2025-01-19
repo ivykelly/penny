@@ -1,8 +1,8 @@
 import { CategoryData } from "../types/lesson";
 
-// Define the categories data
 export const categories: { [key: string]: CategoryData } = {
-    "1": { // Define the first category
+    "1": {
+        // Define the first category
         id: "basics", // Define the id of the category
         title: "Basic Concepts", // Define the title of the category
         lessons: [

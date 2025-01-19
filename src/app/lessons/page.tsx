@@ -59,7 +59,6 @@ export default function LessonPage() {
         }
     }, [mounted, categoryId, lessonIndex, router]);
 
-    // Define the handleLessonComplete function
     const handleLessonComplete = () => {
         if (categoryId) {
             completeLesson(categoryId, lessonIndex); // Complete the lesson
